@@ -248,6 +248,13 @@
             vertical-align: middle;
         }
 
+        .rank-icon {
+            height: 18px;
+            width: auto;
+            vertical-align: middle;
+            margin-right: 4px;
+        }
+
         /* Toast Notification */
         .toast {
             position: fixed;
@@ -357,8 +364,7 @@
     <div id="toast" class="toast">Copied to clipboard!</div>
 
     <script>
-        // --- DATA: 36 Color Codes (Updated per user request) ---
-        // Includes Main and Previous colors with exact Hex codes.
+        // --- DATA: 36 Color Codes ---
         const colorList = [
             { tag: "@mon@", hex: "#00FFAA" }, // 1
             { tag: "@dr1@", hex: "#800000" }, // 2
@@ -412,6 +418,15 @@
             "Extreme Donator": "#BB00BB",     // Purple
             "Legendary Donator": "#FFFF00",   // Yellow
             "Royal Donator": "#00FFFF"       // Cyan
+        };
+
+        // Rank Icon Map (URLs provided by user)
+        const rankIconMap = {
+            "Normal Donator": "https://wiki.roatpkz.com/images/5/59/Donatoricon.png",
+            "Super Donator": "https://wiki.roatpkz.com/images/2/2d/Superdonatoricon.png",
+            "Extreme Donator": "https://wiki.roatpkz.com/images/6/67/Extremedonatoricon.png",
+            "Legendary Donator": "https://wiki.roatpkz.com/images/a/a7/Legendarydonatoricon.png",
+            "Royal Donator": "https://wiki.roatpkz.com/images/7/79/Royaldonatoricon.png"
         };
 
         // --- DATA: Item Database (Subset of 20k) ---
@@ -523,10 +538,17 @@
             // Parse tags for preview
             const previewHTML = parseRoatPkzFormat(msg);
 
-            // Structure the yell (without ::yell)
-            // Use specific rank colors from rankColorMap
+            // Get Rank Icon URL
+            const rankIconUrl = rankIconMap[rank] || "";
+            const rankIconHTML = rankIconUrl ? `<img src="${rankIconUrl}" class="rank-icon" onerror="this.style.display='none'">` : "";
+
+            // Get Rank Color
             const rankColor = rankColorMap[rank] || "#ffffff";
-            const fullYell = `<span style="color: ${rankColor};">[${rank}]</span> <img src="https://static.runelite.net/cache/icon/thumb/1/1_10x10.png" class="chat-icon"> <span style="color: #ff981f;">${user}:</span> ${previewHTML}`;
+
+            // Structure the yell (without ::yell)
+            // Removed the generic crown icon as requested
+            // Format: [RankIcon] [RankText] User: Message
+            const fullYell = `${rankIconHTML} <span style="color: ${rankColor};">[${rank}]</span> <span style="color: #ff981f;">${user}:</span> ${previewHTML}`;
             
             chatOutput.innerHTML = fullYell;
         }
