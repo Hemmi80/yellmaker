@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roat Pkz Custom Yell Maker</title>
+    <!-- Import RuneScape-style font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #121212;
+            --panel-bg: #1e1e1e;
+            --border-color: #383838;
+            --accent-color: #ff981f; /* RS Gold */
+            --accent-hover: #ffb74d;
+            --text-color: #e0e0e0;
+            --chat-bg: #0b0b0b;
+            --chat-border: #2a2a2a;
+            --input-bg: #2d2d2d;
+            --success-color: #4caf50;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'VT323', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: var(--accent-color);
+            text-shadow: 2px 2px 0px #000;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            font-size: 1.4rem;
+            color: #888;
+        }
+
+        /* Main Grid Layout */
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Controls Area */
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            color: #ccc;
+        }
+
+        input[type="text"], select, textarea {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: white;
+            font-family: 'VT323', monospace;
+            font-size: 1.4rem;
+            padding: 10px;
+            border-radius: 4px;
+            resize: none;
+        }
+
+        input[type="text"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        /* Color Buttons */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .color-btn {
+            height: 45px;
+            border: 1px solid #000;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: transform 0.1s;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            text-shadow: 1px 1px 2px black;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 2px;
+            font-weight: bold;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.05);
+            border-color: white;
+            z-index: 1;
+        }
+
+        .action-btn {
+            background-color: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1.5rem;
+            font-family: 'VT323', monospace;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Item Searcher */
+        .item-search-container {
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .item-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #2d2d2d;
+            border: 1px solid var(--border-color);
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .item-dropdown.active {
+            display: block;
+        }
+
+        .item-option {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.3rem;
+        }
+
+        .item-option:hover {
+            background-color: #3d3d3d;
+        }
+
+        .item-option img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+
+        /* Preview Area */
+        .preview-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-box {
+            background-color: var(--chat-bg);
+            border: 2px solid var(--chat-border);
+            padding: 15px;
+            border-radius: 4px;
+            min-height: 200px;
+            display: flex;
+            align-items: flex-start;
+            font-size: 1.5rem;
+            line-height: 1.2;
+            color: #ff981f;
+            overflow: hidden;
+            white-space: pre-wrap;
+        }
+
+        .chat-content {
+            word-wrap: break-word;
+            width: 100%;
+        }
+
+        .chat-icon {
+            margin-right: 5px;
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--success-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 1.4rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Roat Pkz Yell Maker</h1>
+        <p class="subtitle">Real-time custom yell generator</p>
+    </header>
+
+    <main class="app-container">
+        <!-- Left Column: Controls -->
+        <section class="card">
+            <div class="card-header">
+                <span>Configuration</span>
+            </div>
+
+            <div class="control-group">
+                <label for="username">Username (Preview Only)</label>
+                <input type="text" id="username" placeholder="Enter your name" value="Player One">
+            </div>
+
+            <div class="control-group">
+                <label for="rank-select">Yell Rank</label>
+                <select id="rank-select">
+                    <option value="Normal Donator">Normal Donator</option>
+                    <option value="Super Donator">Super Donator</option>
+                    <option value="Extreme Donator">Extreme Donator</option>
+                    <option value="Legendary Donator">Legendary Donator</option>
+                    <option value="Royal Donator">Royal Donator</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="message-input">Yell Message</label>
+                <textarea id="message-input" rows="4" placeholder="Type your message here..."></textarea>
+            </div>
+
+            <div class="control-group">
+                <label>Roat Pkz Colors</label>
+                <div class="color-grid" id="color-buttons">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+
+            <button class="action-btn" id="copy-btn">Copy to Clipboard</button>
+        </section>
+
+        <!-- Right Column: Preview & Items -->
+        <section class="card">
+            <div class="card-header">
+                <span>Live Preview</span>
+            </div>
+            
+            <div class="preview-container">
+                <div class="chat-box">
+                    <div id="chat-output" class="chat-content"></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <div class="card-header" style="font-size: 1.5rem; border: none; padding-bottom: 0;">
+                    <span>Item Searcher</span>
+                </div>
+                <p style="font-size: 1.1rem; color: #888; margin-bottom: 10px;">Search and click to add items &lt;item=X&gt;.</p>
+                
+                <div class="item-search-container">
+                    <input type="text" id="item-search" placeholder="Search for an item (e.g. Whip)..." autocomplete="off">
+                    <div class="item-dropdown" id="item-dropdown">
+                        <!-- Item results go here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="toast" class="toast">Copied to clipboard!</div>
+
+    <script>
+        // --- DATA: 36 Color Codes (Updated per user request) ---
+        // Includes Main and Previous colors with exact Hex codes.
+        const colorList = [
+            { tag: "@mon@", hex: "#00FFAA" }, // 1
+            { tag: "@dr1@", hex: "#800000" }, // 2
+            { tag: "@yel@", hex: "#FFFF00" }, // 3
+            { tag: "@or5@", hex: "#FF7700" }, // 4
+            { tag: "@lre@", hex: "#FF6666" }, // 5
+            { tag: "@pin@", hex: "#FF66BB" }, // 6
+            { tag: "@pur@", hex: "#BB00BB" }, // 7
+            { tag: "@gre@", hex: "#00FF00" }, // 8
+            { tag: "@gr1@", hex: "#222222" }, // 9
+            { tag: "@gra@", hex: "#888888" }, // 10
+            { tag: "@gr2@", hex: "#CCCCCC" }, // 11
+            { tag: "@gr5@", hex: "#555555" }, // 12
+            { tag: "@gr3@", hex: "#777777" }, // 13
+            { tag: "@bl3@", hex: "#00008B" }, // 14
+            { tag: "@bla@", hex: "#000000" }, // 15
+            { tag: "@bl2@", hex: "#3333FF" }, // 16
+            { tag: "@dbl@", hex: "#0000AA" }, // 17
+            { tag: "@ye3@", hex: "#FFFF77" }, // 18
+            { tag: "@ye2@", hex: "#FFFFBB" }, // 19
+            { tag: "@whi@", hex: "#FFFFFF" }, // 20
+            { tag: "@ki2@", hex: "#D2B48C" }, // 21
+            { tag: "@ki1@", hex: "#F0E0C0" }, // 22
+            { tag: "@ir2@", hex: "#FF9988" }, // 23
+            { tag: "@lge@", hex: "#99FF99" }, // 24
+            { tag: "@or1@", hex: "#FFE6CC" }, // 25
+            { tag: "@or4@", hex: "#FF5500" }, // 26
+            { tag: "@or2@", hex: "#FFAA00" }, // 27
+            { tag: "@or3@", hex: "#FF8844" }, // 28
+            { tag: "@ora@", hex: "#FF9900" }, // 29
+            { tag: "@gr4@", hex: "#006600" }, // 30
+            { tag: "@re1@", hex: "#FFAABB" }, // 31
+            { tag: "@dre@", hex: "#990000" }, // 32
+            { tag: "@re2@", hex: "#FF3333" }, // 33
+            { tag: "@cya@", hex: "#00FFFF" }, // 34
+            { tag: "@dbl@", hex: "#000099" }, // 35 (Overrides 17 in map)
+            { tag: "@blu@", hex: "#3366FF" }  // 36
+        ];
+
+        // Convert List to Map for fast parsing
+        const colorMap = {};
+        colorList.forEach(c => {
+            const key = c.tag.replace(/@/g, '');
+            colorMap[key] = c.hex;
+        });
+
+        // Rank Color Map for Preview
+        const rankColorMap = {
+            "Normal Donator": "#ff0000",      // Red
+            "Super Donator": "#0000AA",      // Dark Blue
+            "Extreme Donator": "#BB00BB",     // Purple
+            "Legendary Donator": "#FFFF00",   // Yellow
+            "Royal Donator": "#00FFFF"       // Cyan
+        };
+
+        // --- DATA: Item Database (Subset of 20k) ---
+        const itemDatabase = [
+            { id: 1, name: "Dwarf remains" },
+            { id: 4151, name: "Abyssal whip" },
+            { id: 11694, name: "Armadyl godsword" },
+            { id: 11696, name: "Bandos godsword" },
+            { id: 11698, name: "Saradomin godsword" },
+            { id: 11700, name: "Zamorak godsword" },
+            { id: 14484, name: "Dragon claws" },
+            { id: 6585, name: "Amulet of fury" },
+            { id: 6737, name: "Archers ring (i)" },
+            { id: 6731, name: "Seers ring (i)" },
+            { id: 6735, name: "Warrior ring (i)" },
+            { id: 6733, name: "Berserker ring (i)" },
+            { id: 10828, name: "Helm of neitiznot" },
+            { id: 11235, name: "Dark bow" },
+            { id: 11724, name: "Bandos chestplate" },
+            { id: 11726, name: "Bandos tassets" },
+            { id: 11720, name: "Armadyl chestplate" },
+            { id: 11722, name: "Armadyl chainskirt" },
+            { id: 1038, name: "Santa hat" },
+            { id: 1040, name: "White h'ween mask" },
+            { id: 1042, name: "Blue h'ween mask" },
+            { id: 1044, name: "Red h'ween mask" },
+            { id: 1046, name: "Green h'ween mask" },
+            { id: 4732, name: "Karil's crossbow" },
+            { id: 4718, name: "Dharok's greataxe" },
+            { id: 4726, name: "Guthan's warspear" },
+            { id: 4751, name: "Verac's flail" },
+            { id: 4747, name: "Torag's hammers" },
+            { id: 7462, name: "Dragon boots" },
+            { id: 8850, name: "Vesta's longsword" },
+            { id: 13362, name: "Spirit shield" },
+            { id: 19669, name: "Royal crossbow" },
+            { id: 20171, name: "Fire cape" },
+            { id: 19707, name: "Chaotic rapier" },
+            { id: 15243, name: "Hand cannon" },
+            { id: 5698, name: "Dragon dagger" },
+            { id: 1215, name: "Dragon scimitar" },
+            { id: 4153, name: "Granite maul" },
+            { id: 2417, name: "Staff of light" }
+        ];
+
+        // --- CDN URL GENERATOR ---
+        function getItemIconUrl(id) {
+            return `https://cdn.roatpkz.com/media/media-items/${id}.png`;
+        }
+
+        // --- ELEMENTS ---
+        const usernameInput = document.getElementById('username');
+        const rankSelect = document.getElementById('rank-select');
+        const messageInput = document.getElementById('message-input');
+        const chatOutput = document.getElementById('chat-output');
+        const colorContainer = document.getElementById('color-buttons');
+        const itemSearchInput = document.getElementById('item-search');
+        const itemDropdown = document.getElementById('item-dropdown');
+        const copyBtn = document.getElementById('copy-btn');
+        const toast = document.getElementById('toast');
+
+        // --- INITIALIZATION ---
+
+        // Generate Color Buttons based on colorList (All 36)
+        colorList.forEach(colorObj => {
+            const btn = document.createElement('button');
+            btn.className = 'color-btn';
+            const hex = colorObj.hex;
+            const tag = colorObj.tag;
+            
+            btn.style.backgroundColor = hex;
+            
+            // Determine text color based on background brightness
+            const r = parseInt(hex.substr(1,2), 16);
+            const g = parseInt(hex.substr(3,2), 16);
+            const b = parseInt(hex.substr(5,2), 16);
+            const yiq = ((r*299)+(g*587)+(b*114))/1000;
+            btn.style.color = (yiq >= 128) ? 'black' : 'white';
+
+            btn.textContent = tag;
+            btn.title = tag;
+            btn.onclick = () => insertText(tag);
+            colorContainer.appendChild(btn);
+        });
+
+        // --- CORE FUNCTIONS ---
+
+        // Inserts text at cursor position
+        function insertText(textToInsert) {
+            const start = messageInput.selectionStart;
+            const end = messageInput.selectionEnd;
+            const text = messageInput.value;
+            const beforeText = text.substring(0, start);
+            const afterText = text.substring(end, text.length);
+            
+            messageInput.value = beforeText + textToInsert + text.substring(start, end) + afterText;
+            messageInput.focus();
+            messageInput.selectionStart = messageInput.selectionEnd = start + textToInsert.length + (end - start);
+            
+            updatePreview();
+        }
+
+        // Update the preview box
+        function updatePreview() {
+            const user = usernameInput.value.trim() || "Player";
+            const rank = rankSelect.value;
+            let msg = messageInput.value;
+
+            // Parse tags for preview
+            const previewHTML = parseRoatPkzFormat(msg);
+
+            // Structure the yell (without ::yell)
+            // Use specific rank colors from rankColorMap
+            const rankColor = rankColorMap[rank] || "#ffffff";
+            const fullYell = `<span style="color: ${rankColor};">[${rank}]</span> <img src="https://static.runelite.net/cache/icon/thumb/1/1_10x10.png" class="chat-icon"> <span style="color: #ff981f;">${user}:</span> ${previewHTML}`;
+            
+            chatOutput.innerHTML = fullYell;
+        }
+
+        function parseRoatPkzFormat(text) {
+            if (!text) return "";
+            
+            // Escape HTML to prevent injection
+            let safeText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+            // 1. Parse Item Tags <item=ID>
+            safeText = safeText.replace(/&lt;item=(\d+)&gt;/g, (match, id) => {
+                const url = getItemIconUrl(id);
+                return `<img src="${url}" class="chat-icon" alt="${id}" onerror="this.style.display='none'" style="width:20px;height:20px;vertical-align:middle;margin:0 2px;">`;
+            });
+
+            // 2. Parse Colors @code@
+            const parts = safeText.split('@');
+            let finalHTML = "";
+            let currentColor = null; 
+
+            for (let i = 0; i < parts.length; i++) {
+                if (i % 2 === 1) {
+                    // This part is a potential color code
+                    const code = parts[i].trim();
+                    if (colorMap.hasOwnProperty(code)) {
+                        currentColor = colorMap[code];
+                    } else {
+                        // Invalid code? Treat as text, keep current color
+                        finalHTML += `<span style="color:${currentColor}">@${parts[i]}@</span>`;
+                    }
+                } else {
+                    // This part is text
+                    if (parts[i].length > 0) {
+                        finalHTML += `<span style="color:${currentColor || 'inherit'}">${parts[i]}</span>`;
+                    }
+                }
+            }
+
+            return finalHTML;
+        }
+
+        // --- ITEM SEARCH LOGIC ---
+
+        itemSearchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            itemDropdown.innerHTML = '';
+            
+            if (query.length < 1) {
+                itemDropdown.classList.remove('active');
+                return;
+            }
+
+            const filtered = itemDatabase.filter(item => item.name.toLowerCase().includes(query));
+
+            if (filtered.length > 0) {
+                filtered.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'item-option';
+                    const iconUrl = getItemIconUrl(item.id);
+                    
+                    div.innerHTML = `
+                        <img src="${iconUrl}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/24?text=?'">
+                        <span>${item.name} (${item.id})</span>
+                    `;
+                    div.onclick = () => addItemToMessage(item);
+                    itemDropdown.appendChild(div);
+                });
+                itemDropdown.classList.add('active');
+            } else {
+                itemDropdown.classList.remove('active');
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.item-search-container')) {
+                itemDropdown.classList.remove('active');
+            }
+        });
+
+        function addItemToMessage(item) {
+            // Inserts the item tag <item=ID> at cursor
+            const tag = `<item=${item.id}>`;
+            insertText(tag);
+            itemSearchInput.value = '';
+            itemDropdown.classList.remove('active');
+        }
+
+        // --- COPY TO CLIPBOARD ---
+
+        copyBtn.addEventListener('click', () => {
+            const msg = messageInput.value;
+            
+            if (!msg) {
+                alert("Please type a message first!");
+                return;
+            }
+
+            // Prepend ::yell
+            const command = `::yell ${msg}`;
+            
+            navigator.clipboard.writeText(command).then(() => {
+                showToast();
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert("Failed to copy to clipboard.");
+            });
+        });
+
+        function showToast() {
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // --- EVENT LISTENERS FOR LIVE PREVIEW ---
+        usernameInput.addEventListener('input', updatePreview);
+        rankSelect.addEventListener('change', updatePreview);
+        messageInput.addEventListener('input', updatePreview);
+
+        // Initial Render
+        updatePreview();
+
+    </script>
+</body>
+</html>
