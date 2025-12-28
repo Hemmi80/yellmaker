@@ -221,21 +221,24 @@
             flex-direction: column;
         }
 
-        .chat-box {
-            background-color: var(--chat-bg);
-            border: 2px solid var(--chat-border);
-            padding: 15px;
-            border-radius: 4px;
-            min-height: 200px;
-            display: flex;
-            align-items: flex-start;
-            font-size: 1.5rem;
-            line-height: 1.2;
-            color: #ff981f;
-            overflow: hidden;
-            white-space: pre-wrap;
-        }
-
+		.chat-box {
+		  background-color: var(--chat-bg);            /* fallback */
+		  background-image: url("https://i.imgur.com/kMxVxgS.png");
+		  background-repeat: no-repeat;
+		  background-position: center;
+		  background-size: cover;                      /* or: contain */
+		  
+		  border: 2px solid var(--chat-border);
+		  padding: 15px;
+		  border-radius: 4px;
+		  min-height: 200px;
+		  display: flex;
+		  align-items: flex-start;
+		  font-size: 1.5rem;
+		  line-height: 1.2;
+		  overflow: hidden;
+		  white-space: pre-wrap;
+		}
         .chat-content {
             word-wrap: break-word;
             width: 100%;
@@ -310,7 +313,7 @@
             <div class="control-group">
                 <label for="rank-select">Yell Rank</label>
                 <select id="rank-select">
-                    <option value="Normal Donator">Normal Donator</option>
+                    <option value="Donator">Donator</option>
                     <option value="Super Donator">Super Donator</option>
                     <option value="Extreme Donator">Extreme Donator</option>
                     <option value="Legendary Donator">Legendary Donator</option>
@@ -413,7 +416,7 @@
 
         // Rank Color Map for Preview
         const rankColorMap = {
-            "Normal Donator": "#ff0000",      // Red
+            "Donator": "#ff0000",      // Red
             "Super Donator": "#0000AA",      // Dark Blue
             "Extreme Donator": "#BB00BB",     // Purple
             "Legendary Donator": "#FFFF00",   // Yellow
@@ -422,7 +425,7 @@
 
         // Rank Icon Map (URLs provided by user)
         const rankIconMap = {
-            "Normal Donator": "https://wiki.roatpkz.com/images/5/59/Donatoricon.png",
+            "Donator": "https://wiki.roatpkz.com/images/5/59/Donatoricon.png",
             "Super Donator": "https://wiki.roatpkz.com/images/2/2d/Superdonatoricon.png",
             "Extreme Donator": "https://wiki.roatpkz.com/images/6/67/Extremedonatoricon.png",
             "Legendary Donator": "https://wiki.roatpkz.com/images/a/a7/Legendarydonatoricon.png",
@@ -35009,7 +35012,7 @@
             // Structure the yell (without ::yell)
             // Removed the generic crown icon as requested
             // Format: [RankIcon] [RankText] User: Message
-            const fullYell = `${rankIconHTML} <span style="color: ${rankColor};">[${rank}]</span> <span style="color: #ff981f;">${user}:</span> ${previewHTML}`;
+            const fullYell = `${rankIconHTML} <span style="color: ${rankColor};">[${rank}]</span> <span style="color: #000000;">${user}:</span> ${previewHTML}`;
             
             chatOutput.innerHTML = fullYell;
         }
@@ -35044,7 +35047,7 @@
                 } else {
                     // This part is text
                     if (parts[i].length > 0) {
-                        finalHTML += `<span style="color:${currentColor || 'inherit'}">${parts[i]}</span>`;
+                        finalHTML += `<span style="color:${currentColor || '#000000'}">${parts[i]}</span>`;`<span style="color:${currentColor || '#000000'}">${parts[i]}</span>`;
                     }
                 }
             }
